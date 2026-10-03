@@ -66,6 +66,13 @@ const TOURS = {
     { element: ".resultado", popover: { title: "Resultado", description: "Antes del ataque muestra lo que se espera. Después, el resultado real de la validación: qué bloque fue alterado y por qué.", side: "left", align: "start" } },
     tourPaso("accesos-demo", "Accesos rápidos", "Para saltar a otras secciones durante la presentación.", "top"),
   ],
+
+  ayuda: [
+    tourIntro("Ayuda", "Todo lo necesario para entender el sistema y responder preguntas en la presentación."),
+    tourPaso("flujo", "Cómo funciona", "El recorrido de un dato: lectura de sensores, predicción del modelo, registro en la blockchain, validación y consulta.", "right"),
+    tourPaso("guias", "Guías por sección", "Cada botón te lleva a una sección y arranca su guía paso a paso.", "left"),
+    tourPaso("faq", "Preguntas frecuentes", "Las preguntas más probables sobre los datos, la blockchain y el modelo. Tocá una para ver la respuesta.", "top"),
+  ],
 };
 
 /** Arranca el recorrido de la sección actual (solo con los pasos cuyo elemento existe) */

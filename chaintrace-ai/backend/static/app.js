@@ -739,6 +739,89 @@ function resultadoDemo(nAtaque) {
 }
 
 // ============================================================
+// Vista: AYUDA
+// ============================================================
+
+/** Preguntas frecuentes: las que probablemente hagan en la presentación */
+function preguntasFrecuentes() {
+  const acc = S.modelo ? pct(S.modelo.accuracy) : "82,6 %";
+  return [
+    ["¿De dónde salen los datos?",
+     "Es un prototipo: las lecturas de sensores se simulan con el formulario de Checkpoints y con el escenario de demo. En un sistema real llegarían de sensores IoT (termómetros y medidores de humedad en camiones y cámaras de frío)."],
+    ["¿Qué diferencia hay con una base de datos común?",
+     "En una base de datos, alguien con acceso puede cambiar un dato viejo y nadie lo nota. En la blockchain cada bloque guarda el hash del anterior: si se modifica un dato, su hash deja de coincidir y la validación indica exactamente qué bloque se alteró. Probalo con «Simular ataque»."],
+    ["¿Por qué una blockchain propia y no Ethereum?",
+     "En una cadena de suministro los participantes son conocidos (productores, transportistas, almacenes), así que no hace falta una red pública ni criptomonedas. Se usa una blockchain permisionada, como hace la industria (por ejemplo, IBM Food Trust con Hyperledger Fabric). Además no requiere wallets, gas ni internet."],
+    ["¿Por qué Machine Learning tradicional y no un LLM?",
+     "El problema es clasificar 4 números (temperatura, humedad, demora y distancia) en 3 niveles de riesgo. Un RandomForest es el modelo indicado para datos tabulares: es liviano, rápido, interpretable y corre local. Un LLM sería más lento, más caro, menos preciso con números y necesitaría una API externa."],
+    [`¿Por qué la exactitud es ${acc}?`,
+     "Es la proporción de lecturas del conjunto de prueba (el 20 % que el modelo no vio al entrenar) que clasificó bien. El dataset es sintético y tiene ruido a propósito, así que es una exactitud de prototipo: con datos reales habría que reentrenar el modelo."],
+    ["¿Qué significa la confianza de una predicción?",
+     "Es la probabilidad que el modelo le asigna al nivel de riesgo elegido. Un RandomForest tiene 200 árboles que «votan»: si el 93 % de los votos dice ALTO, la confianza es 93 %."],
+    ["¿Qué es la prueba de trabajo?",
+     "Para agregar un bloque hay que encontrar un número (nonce) que haga que su hash empiece con «000». Ilustra el «minado» de las blockchains reales sin que la demo sea lenta."],
+    ["Simulé un ataque, ¿cómo vuelvo atrás?",
+     "Los bloques alterados no se pueden «arreglar»: esa es la gracia de la blockchain. Para empezar de nuevo, andá a Demo y usá «Reiniciar demo» y después «Cargar escenario demo»."],
+    ["¿Dónde se guardan los datos?",
+     "La cadena completa se guarda en el archivo backend/chain.json y el modelo entrenado en backend/model.joblib. Todo queda en la computadora donde corre el servidor."],
+  ];
+}
+
+function vAyuda() {
+  const flujo = [
+    ["termo", "t-neutro", "1. Lectura de sensores", "Un actor (productor, transportista, almacén o minorista) reporta temperatura, humedad, demora y distancia."],
+    ["cerebro", "tono-azul", "2. Predicción", "La API le pasa las lecturas al modelo de ML, que predice el riesgo: bajo, medio o alto."],
+    ["box", "tono-teal", "3. Registro en la blockchain", "Los datos y la predicción se guardan en un bloque nuevo, minado y encadenado al anterior por su hash."],
+    ["escudo-ok", "tono-verde", "4. Validación", "Se recalculan los hashes de toda la cadena: cualquier dato alterado queda en evidencia."],
+    ["casa", "tono-naranja", "5. Consulta", "El dashboard muestra el recorrido de cada lote, sus riesgos y el estado de la cadena."],
+  ];
+  const guias = ["resumen", "productos", "checkpoints", "blockchain", "modelo", "demo"];
+  const iconos = { resumen: "casa", productos: "box", checkpoints: "pin", blockchain: "red", modelo: "barras-nav", demo: "play-linea" };
+  return `
+    <section class="banner" data-tour="banner-ayuda">
+      <div class="play-grande">${ic("ayuda")}</div>
+      <div class="banner-texto">
+        <h2>¿Cómo funciona ChainTrace-AI?</h2>
+        <p>Registra cada etapa de la cadena de frío en una blockchain y usa Machine Learning para anticipar el riesgo de que un producto llegue en mal estado.</p>
+      </div>
+      <div class="botones">
+        <button class="btn-grande" onclick="ir('demo')">${ic("play")}Ir a la demo</button>
+      </div>
+    </section>
+    <div class="grid g-main-side">
+      <div class="card" data-tour="flujo">
+        <div class="card-titulo">${ic("ruta")}<div><h3>Cómo funciona</h3><p>El recorrido de un dato, desde el sensor hasta el dashboard</p></div></div>
+        <div class="flujo">
+          ${flujo.map(([icono, tono, titulo, texto]) => `
+            <div class="flujo-paso">
+              <span class="circulo ${tono}">${ic(icono)}</span>
+              <div><b>${titulo}</b><span>${texto}</span></div>
+            </div>`).join("")}
+        </div>
+      </div>
+      <div class="card" data-tour="guias">
+        <div class="card-titulo">${ic("lista")}<div><h3>Guías por sección</h3><p>Te lleva a la sección y te la explica paso a paso</p></div></div>
+        <div class="accesos-lista">
+          ${guias.map(v => `<button class="acceso" onclick="verGuia('${v}')">${ic(iconos[v])}${VISTAS[v].titulo}${ic("chev", "chev-der")}</button>`).join("")}
+        </div>
+        <p class="tenue chico" style="margin:12px 0 0">También podés tocar el botón <b>?</b> de abajo a la derecha en cualquier sección.</p>
+      </div>
+    </div>
+    <div class="card" data-tour="faq">
+      <div class="card-titulo">${ic("ayuda")}<div><h3>Preguntas frecuentes</h3></div></div>
+      <div class="faq">
+        ${preguntasFrecuentes().map(([p, r]) => `<details><summary>${p}${ic("chev")}</summary><p>${r}</p></details>`).join("")}
+      </div>
+    </div>`;
+}
+
+/** Va a una sección y arranca su guía */
+function verGuia(vista) {
+  ir(vista);
+  setTimeout(iniciarTour, 350);
+}
+
+// ============================================================
 // Navegación
 // ============================================================
 
@@ -749,6 +832,7 @@ const VISTAS = {
   blockchain:  { titulo: "Blockchain",  sub: "Visualización y validación de bloques",        render: vBlockchain },
   modelo:      { titulo: "Modelo ML",   sub: "Desempeño y explicabilidad del modelo de clasificación de riesgo", render: vModelo },
   demo:        { titulo: "Demo",        sub: "Escenario guiado para la presentación del sistema",         render: vDemo },
+  ayuda:       { titulo: "Ayuda",       sub: "Cómo funciona el sistema y cómo usarlo",                    render: vAyuda },
 };
 
 function vistaActual() {

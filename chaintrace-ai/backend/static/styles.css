@@ -343,14 +343,12 @@ td .mini-icono svg { width: 20px; height: 20px; }
 .tono-naranja { background: #3d2a14; color: #f5a524; }
 .lista-actividad { border-top: 1px solid var(--borde); }
 .act {
-  display: grid; grid-template-columns: 22px 54px minmax(0, 1fr) auto 96px; gap: 18px; align-items: center;
-  width: 100%; padding: 14px 8px 14px 0; position: relative; text-align: left;
+  display: grid; grid-template-columns: 22px 54px minmax(0, 1fr) auto 110px; gap: 18px; align-items: center;
+  width: 100%; padding: 14px 14px 14px 0; position: relative; text-align: left;
   background: none; border: 0; border-bottom: 1px solid var(--borde); border-radius: 0;
   color: inherit; font: inherit; font-weight: normal; white-space: normal;
 }
 .act:last-child { border-bottom: 0; }
-.act:hover { background: #ffffff06; filter: none; }
-.act.alterado { background: #3a161855; }
 .act .punto { width: 12px; height: 12px; border-radius: 50%; background: var(--color); box-shadow: 0 0 8px var(--color); justify-self: center; z-index: 1; }
 .act:not(:last-child)::after { content: ""; position: absolute; left: 10px; top: 50%; height: 100%; width: 2px; background: var(--borde-2); }
 .act .circulo { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; border: 1px solid #ffffff12; }
@@ -359,6 +357,22 @@ td .mini-icono svg { width: 20px; height: 20px; }
 .act .sub { display: block; color: var(--tenue); font-size: 14px; margin-top: 2px; }
 .act .hora { color: var(--tenue); font-size: 14px; white-space: nowrap; }
 .act .badge { justify-self: stretch; }
+/* Resaltado de la fila (hover, seleccionada o alterada): un recuadro redondeado que
+   empieza después de la línea de tiempo, para no tapar los puntos */
+.act > * { position: relative; z-index: 1; }
+.act::before {
+  content: ""; position: absolute; top: 6px; bottom: 6px; left: 30px; right: 0; border-radius: 12px;
+  border: 1px solid transparent; pointer-events: none; transition: background .15s ease, border-color .15s ease;
+}
+.act:hover { filter: none; }
+.act:hover::before { background: #ffffff07; }
+.act.alterado::before { background: #3a161866; border-color: #6e2b27; }
+.act.sel::before { background: #2fd4c012; border-color: #2fd4c066; }
+.act.sel .circulo { box-shadow: 0 0 0 2px var(--acento); }
+.act.sel .titulo { color: var(--acento); }
+.act.sel.alterado::before { background: #3a161899; border-color: var(--alto); }
+.act.sel.alterado .circulo { box-shadow: 0 0 0 2px var(--alto); }
+.act.sel.alterado .titulo { color: var(--texto); }
 .accesos-lista { display: flex; flex-direction: column; gap: 10px; }
 .acceso {
   justify-content: flex-start; gap: 20px; width: 100%; padding: 15px 20px; font-size: 16px; font-weight: 600;
@@ -383,6 +397,7 @@ td .mini-icono svg { width: 20px; height: 20px; }
   .act .hora { display: none; }
   .act .circulo { width: 42px; height: 42px; }
   .act:not(:last-child)::after { left: 8px; }
+  .act::before { left: 24px; }
   .stat-icono.redondo { width: 52px; height: 52px; }
 }
 
@@ -445,8 +460,6 @@ table.simple .badge { min-width: 88px; }
 }
 
 /* ---------- Blockchain: explorador y detalle ---------- */
-.act.sel { background: #2fd4c00f; box-shadow: inset 3px 0 0 var(--acento); }
-.act.sel.alterado { background: #3a161888; box-shadow: inset 3px 0 0 var(--alto); }
 .detalle-lista { border-top: 1px solid var(--borde); }
 .det { display: grid; grid-template-columns: 24px 130px minmax(0, 1fr); gap: 16px; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--borde); font-size: 15px; }
 .det:last-child { border-bottom: 0; }
@@ -583,3 +596,28 @@ input::-webkit-contacts-auto-fill-button,
 input::-webkit-credentials-auto-fill-button {
   visibility: hidden; display: none !important; pointer-events: none; width: 0; height: 0; margin: 0;
 }
+
+/* ---------- Ayuda ---------- */
+.flujo { display: flex; flex-direction: column; }
+.flujo-paso { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 16px; align-items: center; padding: 12px 0; position: relative; }
+.flujo-paso:not(:last-child)::after { content: ""; position: absolute; left: 25px; top: calc(50% + 28px); height: calc(100% - 56px); width: 2px; background: var(--borde-2); }
+.flujo-paso .circulo { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; border: 1px solid #ffffff12; }
+.flujo-paso .circulo svg { width: 24px; height: 24px; }
+.flujo-paso b { display: block; font-size: 15.5px; }
+.flujo-paso span { color: #c4dbda; font-size: 14px; }
+.faq { display: flex; flex-direction: column; gap: 12px; }
+.faq details {
+  border: 1px solid var(--borde-2); border-radius: 12px; background: #0e2a30;
+  transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.faq details:hover { border-color: #2f7f74; }
+.faq details[open] { background: linear-gradient(180deg, #12463d, #0f3a35); border-color: var(--acento); box-shadow: 0 0 0 1px #2fd4c033, 0 0 18px #2fd4c014; }
+.faq summary {
+  list-style: none; cursor: pointer; padding: 18px 22px; font-weight: 500; font-size: 16px;
+  display: flex; justify-content: space-between; align-items: center; gap: 14px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary svg { width: 20px; height: 20px; color: var(--texto); transform: rotate(90deg); transition: transform .2s ease; flex-shrink: 0; }
+.faq details[open] summary svg { transform: rotate(-90deg); }
+.faq details p { margin: 0; padding: 0 22px 18px; color: #c4dbda; line-height: 1.55; }
+.acceso { white-space: normal; text-align: left; min-width: 0; }

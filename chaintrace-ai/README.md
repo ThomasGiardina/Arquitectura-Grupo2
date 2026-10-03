@@ -88,7 +88,7 @@ pytest -v
 | `backend/ml_model.py` | Genera el dataset sintético, entrena el RandomForest, lo guarda en `model.joblib` y expone `predict()` y `model_info()`. |
 | `backend/static/index.html` | Estructura del dashboard: sidebar, encabezado e íconos SVG. |
 | `backend/static/styles.css` | Estilos del dashboard (tema oscuro verde azulado, responsive). |
-| `backend/static/app.js` | Lógica del dashboard en JS vanilla (sin build). Seis secciones: Resumen, Productos, Checkpoints, Blockchain, Modelo ML y Demo. |
+| `backend/static/app.js` | Lógica del dashboard en JS vanilla (sin build). Siete secciones: Resumen, Productos, Checkpoints, Blockchain, Modelo ML, Demo y Ayuda (preguntas frecuentes y guías). |
 | `backend/static/tour.js` | Guías de cada sección: el botón **?** (abajo a la derecha) explica paso a paso la sección actual. |
 | `backend/static/vendor/driver/` | [Driver.js](https://driverjs.com) 1.3.6 (licencia MIT), la librería de las guías. Está copiada en el proyecto para que funcione sin internet. |
 | `backend/test_api.py` | Pruebas de punta a punta con pytest y el TestClient de FastAPI. |
