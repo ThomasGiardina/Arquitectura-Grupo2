@@ -42,12 +42,13 @@ a { color: inherit; }
   position: fixed; inset: 0 auto 0 0; width: var(--sidebar-w); z-index: 5;
   background: linear-gradient(180deg, #0a2523, var(--sidebar));
   border-right: 1px solid var(--borde);
-  display: flex; flex-direction: column; padding: 22px 0 22px;
+  display: flex; flex-direction: column; padding: 22px 0 14px;
+  transition: width .2s ease;
 }
 .logo { display: flex; align-items: center; gap: 10px; font-size: 23px; font-weight: 800; letter-spacing: -.02em; padding: 0 22px 26px; text-decoration: none; }
 .logo svg { width: 32px; height: 32px; color: var(--acento); }
 .logo span { color: var(--acento); }
-.nav { display: flex; flex-direction: column; gap: 6px; padding-right: 12px; }
+.nav { display: flex; flex-direction: column; gap: 6px; padding-right: 12px; position: relative; }
 .nav a {
   display: flex; align-items: center; gap: 16px; padding: 13px 22px 13px 26px;
   color: #c4dbda; text-decoration: none; font-size: 16px; border-radius: 0 12px 12px 0;
@@ -55,16 +56,26 @@ a { color: inherit; }
 }
 .nav a svg { width: 24px; height: 24px; }
 .nav a:hover { background: #ffffff08; color: var(--texto); }
-.nav a.activo { background: linear-gradient(90deg, #15514a, #0f3a37); color: #fff; font-weight: 700; border-left-color: var(--acento); }
+.nav a { position: relative; z-index: 1; }
+.nav a.activo { color: #fff; font-weight: 700; }
+.nav a.activo:hover { background: transparent; }
+/* Resaltado de la sección activa: es un solo elemento que se desliza
+   hasta la opción elegida (app.js lo posiciona en moverIndicador) */
+.nav-indicador {
+  position: absolute; top: 0; left: 0; width: calc(100% - 12px); height: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(90deg, #15514a, #0f3a37); border-left: 3px solid var(--acento); border-radius: 0 12px 12px 0;
+  transition: transform .35s cubic-bezier(.4, 0, .2, 1), height .35s cubic-bezier(.4, 0, .2, 1), width .35s cubic-bezier(.4, 0, .2, 1);
+}
+.nav-indicador.sin-anim { transition: none; }
+@media (prefers-reduced-motion: reduce) { .nav-indicador { transition: none; } }
 .nav a.activo svg { color: var(--acento); }
 .sidebar-pie { margin-top: auto; padding: 18px 22px 0; margin-left: 22px; margin-right: 22px; padding-left: 0; padding-right: 0; border-top: 1px solid var(--borde); color: var(--tenue); font-size: 13px; }
-.sidebar-pie p { margin: 0 0 12px; }
 .estado-mini { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; color: var(--texto); font-weight: 600; }
 .estado-mini .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--bajo); box-shadow: 0 0 8px var(--bajo); }
 .estado-mini.mal .dot { background: var(--alto); box-shadow: 0 0 8px var(--alto); }
 
 /* ---------- Contenedor principal ---------- */
-.app { margin-left: var(--sidebar-w); min-height: 100vh; }
+.app { margin-left: var(--sidebar-w); min-height: 100vh; transition: margin-left .2s ease; }
 .topbar {
   display: flex; align-items: center; gap: 20px; padding: 20px 30px 16px;
   border-bottom: 1px solid var(--borde);
@@ -110,10 +121,11 @@ button:disabled { opacity: .45; cursor: not-allowed; filter: none; }
 
 .grid { display: grid; gap: 18px; margin-bottom: 18px; }
 .g-2 { grid-template-columns: 1fr 1fr; }
-.g-3 { grid-template-columns: repeat(3, 1fr); }
+.g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .g-4 { grid-template-columns: repeat(4, 1fr); }
 .g-main-side { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); }
-.g-checkpoints { grid-template-columns: minmax(0, 1.15fr) minmax(0, .95fr) minmax(0, 1fr); align-items: stretch; }
+/* Mismas columnas que las estadísticas de arriba, para que queden alineadas */
+.g-checkpoints { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
 .col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 
 /* ---------- Banner (integridad / demo) ---------- */
@@ -288,8 +300,6 @@ td .mini-icono svg { width: 20px; height: 20px; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1400px) {
-  .g-checkpoints { grid-template-columns: 1fr 1fr; }
-  .g-checkpoints > :last-child { grid-column: 1 / -1; }
   .cubos { display: none; }
 }
 @media (max-width: 1200px) {
@@ -304,7 +314,7 @@ td .mini-icono svg { width: 20px; height: 20px; }
   .nav::-webkit-scrollbar { display: none; }
   .nav a { padding: 8px 12px; border-left: 0; border-bottom: 2px solid transparent; border-radius: 8px; font-size: 14px; gap: 7px; white-space: nowrap; }
   .nav a svg { width: 18px; height: 18px; }
-  .nav a.activo { border-bottom-color: var(--acento); }
+  .nav-indicador { border-left: 0; border-bottom: 2px solid var(--acento); border-radius: 8px; }
   .sidebar-pie { display: none; }
   .app { margin-left: 0; }
   .g-3, .g-checkpoints { grid-template-columns: minmax(0, 1fr); }
@@ -477,3 +487,99 @@ table.simple .badge { min-width: 88px; }
 .demo-grid { align-items: stretch; }
 .demo-grid > .col > .resultado:last-child { flex: 1; display: flex; flex-direction: column; }
 .demo-grid .resultado .cuerpo { flex: 1; }
+
+/* ---------- Sidebar contraída ----------
+   Los íconos no se mueven: la sidebar se angosta y los textos se desvanecen.
+   Por eso los elementos mantienen su padding y ancho de siempre (nowrap) y lo
+   que sobra queda recortado por el overflow de la sidebar. */
+.sidebar { overflow: hidden; }
+.logo, .nav a, .estado-mini { white-space: nowrap; }
+.sidebar-pie { width: calc(250px - 44px); flex-shrink: 0; }
+.logo div, .nav .txt, .estado-mini span:last-child, .toggle-sidebar .txt { transition: opacity .15s ease; }
+.toggle-sidebar {
+  margin: 14px 22px 0; justify-content: flex-start; gap: 12px; padding: 10px 9px; overflow: hidden;
+  background: transparent; color: var(--tenue); border: 1px solid var(--borde); font-weight: 600; font-size: 13.5px;
+  transition: width .2s ease;
+}
+.toggle-sidebar:hover { background: #ffffff0a; color: var(--texto); filter: none; }
+.toggle-sidebar svg { transition: transform .2s ease; }
+
+body.sidebar-contraida { --sidebar-w: 80px; }
+body.sidebar-contraida .logo div,
+body.sidebar-contraida .nav .txt,
+body.sidebar-contraida .estado-mini span:last-child,
+body.sidebar-contraida .toggle-sidebar .txt { opacity: 0; pointer-events: none; }
+body.sidebar-contraida .toggle-sidebar { width: 38px; }
+body.sidebar-contraida .toggle-sidebar svg { transform: rotate(180deg); }
+
+/* Pie de la sidebar: la línea se achica al ancho de la columna de íconos
+   y el punto de estado queda alineado con los íconos */
+.sidebar-pie { border-top: 0; position: relative; }
+.sidebar-pie::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; border-top: 1px solid var(--borde); transition: width .2s ease; }
+.estado-mini { padding-left: 14px; margin-bottom: 0; }
+body.sidebar-contraida .sidebar-pie::before { width: 38px; }
+
+@media (max-width: 960px) {
+  .toggle-sidebar { display: none; }
+  .sidebar { overflow: visible; }
+  body.sidebar-contraida .logo div, body.sidebar-contraida .nav .txt { opacity: 1; pointer-events: auto; }
+}
+
+/* ---------- Botón de ayuda y guía (Driver.js) ---------- */
+.btn-ayuda {
+  position: fixed; right: 24px; bottom: 24px; z-index: 15;
+  width: 54px; height: 54px; padding: 0; border-radius: 50%;
+  font-size: 24px; font-weight: 800; line-height: 1;
+  background: linear-gradient(180deg, #3fe0cc, var(--acento-2)); color: #042420;
+  box-shadow: 0 8px 24px #0009, 0 0 0 4px #2fd4c022;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn-ayuda:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 10px 28px #000a, 0 0 0 6px #2fd4c033; filter: none; }
+.driver-active .btn-ayuda { display: none; }
+
+.driver-popover.ct-tour {
+  background: #0f2d33; color: var(--texto); border: 1px solid var(--borde-2); border-radius: 14px;
+  box-shadow: 0 16px 40px #000c; padding: 18px 20px; max-width: 360px; font-family: inherit;
+}
+.ct-tour .driver-popover-title { font-size: 17px; font-weight: 700; color: var(--acento); font-family: inherit; }
+.ct-tour .driver-popover-description { font-size: 14.5px; line-height: 1.5; color: #c4dbda; font-family: inherit; }
+.ct-tour .driver-popover-progress-text { color: var(--tenue); font-size: 12.5px; }
+.ct-tour .driver-popover-close-btn { color: var(--tenue); }
+.ct-tour .driver-popover-close-btn:hover { color: var(--texto); }
+.ct-tour .driver-popover-footer { margin-top: 16px; }
+.ct-tour .driver-popover-footer button {
+  background: transparent; color: var(--texto); border: 1px solid var(--borde-2); border-radius: 8px;
+  text-shadow: none; font: inherit; font-size: 13px; font-weight: 600; padding: 6px 12px;
+}
+.ct-tour .driver-popover-footer button:hover { background: #ffffff0d; }
+.ct-tour .driver-popover-footer .driver-popover-next-btn { background: linear-gradient(180deg, #3fe0cc, var(--acento-2)); color: #042420; border-color: transparent; }
+.ct-tour .driver-popover-footer .driver-popover-next-btn:hover { filter: brightness(1.1); background: linear-gradient(180deg, #3fe0cc, var(--acento-2)); }
+.ct-tour .driver-popover-footer .driver-popover-btn-disabled { opacity: .4; }
+/* Flechas del recuadro con el color de fondo del tema */
+.ct-tour .driver-popover-arrow-side-left { border-left-color: #0f2d33; }
+.ct-tour .driver-popover-arrow-side-right { border-right-color: #0f2d33; }
+.ct-tour .driver-popover-arrow-side-top { border-top-color: #0f2d33; }
+.ct-tour .driver-popover-arrow-side-bottom { border-bottom-color: #0f2d33; }
+
+@media (max-width: 640px) {
+  .btn-ayuda { right: 16px; bottom: 16px; width: 48px; height: 48px; font-size: 21px; }
+}
+
+/* Checkpoints en pantallas medianas: etiquetas arriba de los campos y, más angosto, tarjetas apiladas */
+@media (max-width: 1400px) {
+  #formCheckpoint.form-horizontal { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  #formCheckpoint.form-horizontal label { margin-top: 8px; }
+  .cp { grid-template-columns: 46px minmax(0, 1fr) auto; gap: 12px; }
+  .cp .circulo { width: 46px; height: 46px; }
+  .pred-grande { font-size: 28px; }
+}
+@media (max-width: 1150px) {
+  .g-checkpoints { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Safari muestra un botón de "autocompletar contactos" en algunos campos;
+   acá ningún campo es un dato personal, así que se oculta */
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+  visibility: hidden; display: none !important; pointer-events: none; width: 0; height: 0; margin: 0;
+}

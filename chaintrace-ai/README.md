@@ -89,6 +89,8 @@ pytest -v
 | `backend/static/index.html` | Estructura del dashboard: sidebar, encabezado e íconos SVG. |
 | `backend/static/styles.css` | Estilos del dashboard (tema oscuro verde azulado, responsive). |
 | `backend/static/app.js` | Lógica del dashboard en JS vanilla (sin build). Seis secciones: Resumen, Productos, Checkpoints, Blockchain, Modelo ML y Demo. |
+| `backend/static/tour.js` | Guías de cada sección: el botón **?** (abajo a la derecha) explica paso a paso la sección actual. |
+| `backend/static/vendor/driver/` | [Driver.js](https://driverjs.com) 1.3.6 (licencia MIT), la librería de las guías. Está copiada en el proyecto para que funcione sin internet. |
 | `backend/test_api.py` | Pruebas de punta a punta con pytest y el TestClient de FastAPI. |
 | `backend/requirements.txt` | Dependencias. |
 
@@ -104,7 +106,7 @@ Archivos generados en tiempo de ejecución (no se versionan): `model.joblib` y `
 | POST | `/api/checkpoints` | Nuevo checkpoint: predice el riesgo y lo registra como bloque. |
 | GET | `/api/blockchain/validar` | Valida toda la cadena. |
 | POST | `/api/blockchain/manipular/{index}` | **Demo**: altera un bloque sin recalcular su hash. |
-| POST | `/api/demo/escenario` | Carga un lote de ejemplo completo con 4 checkpoints. |
+| POST | `/api/demo/escenario` | Carga 5 lotes de ejemplo; el primero (leche) tiene el recorrido completo con la falla de frío. |
 | POST | `/api/demo/reset` | Reinicia la cadena. |
 | GET | `/api/blockchain` | Cadena completa (todos los bloques). |
 | GET | `/api/modelo/info` | Exactitud e importancia de variables del modelo. |
@@ -147,7 +149,7 @@ El dataset es **sintético** (4.000 muestras): temperatura segura entre 2 y 8 °
 La sección **Demo** de la sidebar tiene estos mismos pasos con botones.
 
 1. **(0:00) Contexto.** Abrir http://localhost:8000 en **Resumen**. El banner está en verde: la cadena es íntegra.
-2. **(0:20) Cargar escenario.** En **Demo**, click en **"Cargar escenario demo"**. Se crea el lote `LOTE-001` (Leche entera 1L) con 5 bloques: alta + 4 checkpoints.
+2. **(0:20) Cargar escenario.** En **Demo**, click en **"Cargar escenario demo"**. Se cargan 5 lotes en distintas etapas (se ven en **Productos**). El protagonista es `LOTE-001` (Leche entera 1L), con su recorrido completo: alta + 4 checkpoints.
 3. **(0:45) Recorrer la cadena.** En **Resumen** se ve la línea de tiempo del lote. El **Transporte** tiene 14 °C, 85 % de humedad y 6 h de demora, y el modelo marca **riesgo ALTO**. El Almacén recibe el producto todavía tibio (MEDIO) y el Minorista vuelve a la normalidad (BAJO).
 4. **(1:15) Predicción en vivo.** En **Checkpoints**, cambiar la temperatura del formulario (por ejemplo de 5 a 14 °C) y mostrar cómo cambia la predicción del modelo en tiempo real.
 5. **(1:45) Bloques y hashes.** En **Blockchain**, mostrar que el *hash previo* de cada bloque es el *hash* del anterior, y el detalle de un bloque (nonce, hash SHA-256, datos).

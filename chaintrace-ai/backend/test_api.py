@@ -90,8 +90,14 @@ def test_escenario_demo(client):
     assert niveles["Transportista"] == "alto"
     assert niveles["Productor"] in ("bajo", "medio")
     assert niveles["Minorista"] in ("bajo", "medio")
-    # Un segundo escenario usa un id nuevo
-    assert client.post("/api/demo/escenario").json()["producto_id"] == "LOTE-002"
+    # El checkpoint del Transportista del lote principal es el bloque #3 (el que se ataca en la demo)
+    assert next(b["index"] for b in r["historial"] if b["actor"] == "Transportista") == 3
+    # Se cargan 5 lotes, con al menos un riesgo de cada nivel según su último checkpoint
+    assert r["productos"] == ["LOTE-001", "LOTE-002", "LOTE-003", "LOTE-004", "LOTE-005"]
+    ultimos = {p["id"]: p["ultimo_riesgo"] for p in client.get("/api/productos").json()}
+    assert ultimos == {"LOTE-001": "bajo", "LOTE-002": "bajo", "LOTE-003": "medio", "LOTE-004": "alto", "LOTE-005": "bajo"}
+    # Un segundo escenario usa ids nuevos
+    assert client.post("/api/demo/escenario").json()["producto_id"] == "LOTE-006"
 
 
 def test_reset(client):

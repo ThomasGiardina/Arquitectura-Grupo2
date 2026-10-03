@@ -153,27 +153,77 @@ def manipular(index: int):
 
 # ---------- Demo ----------
 
-# Valores verificados con el modelo real: el Transportista tiene una falla de
-# refrigeración (riesgo ALTO), el Almacén recibe el producto todavía tibio
-# (MEDIO) y en el Minorista ya se recuperó la cadena de frío (BAJO).
+def lectura(actor, temperatura, humedad, demora_horas, distancia_km):
+    return {"actor": actor, "temperatura": temperatura, "humedad": humedad,
+            "demora_horas": demora_horas, "distancia_km": distancia_km}
+
+
+# Lotes del escenario de demo. Todos los riesgos se verificaron con el modelo real.
+# El primero es el protagonista de la demo: el Transportista tiene una falla de
+# refrigeración (ALTO), el Almacén lo recibe todavía tibio (MEDIO) y en el
+# Minorista se recupera la cadena de frío (BAJO). Como se carga primero, su
+# checkpoint del Transportista queda en el bloque #3 (el que se ataca en la demo).
+# Los demás están en distintas etapas del recorrido, con riesgos variados.
 ESCENARIO_DEMO = [
-    {"actor": "Productor",     "temperatura": 4.0,  "humedad": 50.0, "demora_horas": 0.5, "distancia_km": 20.0},
-    {"actor": "Transportista", "temperatura": 14.0, "humedad": 85.0, "demora_horas": 6.0, "distancia_km": 400.0},
-    {"actor": "Almacén",       "temperatura": 11.0, "humedad": 70.0, "demora_horas": 4.0, "distancia_km": 150.0},
-    {"actor": "Minorista",     "temperatura": 5.0,  "humedad": 55.0, "demora_horas": 1.0, "distancia_km": 15.0},
+    {
+        "nombre": "Leche entera 1L", "origen": "Tambo La Esperanza (Rafaela, Santa Fe)",
+        "checkpoints": [
+            lectura("Productor",     4.0,  50.0, 0.5, 20.0),    # bajo
+            lectura("Transportista", 14.0, 85.0, 6.0, 400.0),   # alto: falla de frío
+            lectura("Almacén",       11.0, 70.0, 4.0, 150.0),   # medio
+            lectura("Minorista",     5.0,  55.0, 1.0, 15.0),    # bajo
+        ],
+    },
+    {
+        "nombre": "Yogur bebible 1L", "origen": "Tambo San José (Sunchales, Santa Fe)",
+        "checkpoints": [
+            lectura("Productor",     4.5, 52.0, 0.5, 25.0),     # bajo
+            lectura("Transportista", 5.5, 55.0, 1.0, 180.0),    # bajo
+            lectura("Almacén",       4.0, 48.0, 0.5, 30.0),     # bajo
+        ],
+    },
+    {
+        "nombre": "Queso fresco 500 g", "origen": "Cooperativa El Roble (Tandil, Buenos Aires)",
+        "checkpoints": [
+            lectura("Productor",     4.0,  50.0, 0.5, 15.0),    # bajo
+            lectura("Transportista", 11.5, 68.0, 3.0, 220.0),   # medio: camión con demora
+        ],
+    },
+    {
+        "nombre": "Jugo de naranja 1L", "origen": "Finca Los Pinos (Concordia, Entre Ríos)",
+        "checkpoints": [
+            lectura("Productor",     5.0,  50.0, 0.5, 40.0),    # bajo
+            lectura("Transportista", 6.0,  55.0, 1.5, 260.0),   # bajo
+            lectura("Almacén",       13.0, 78.0, 5.0, 60.0),    # alto: falla la cámara de frío
+        ],
+    },
+    {
+        "nombre": "Manteca 200 g", "origen": "Tambo La Esperanza (Rafaela, Santa Fe)",
+        "checkpoints": [
+            lectura("Productor",     3.5, 45.0, 0.5, 10.0),     # bajo
+        ],
+    },
 ]
+
+
+def siguiente_id_lote() -> str:
+    n = 1
+    while chain.product_exists(f"LOTE-{n:03d}"):
+        n += 1
+    return f"LOTE-{n:03d}"
 
 
 @app.post("/api/demo/escenario", tags=["Demo"])
 def cargar_escenario():
-    n = 1
-    while chain.product_exists(f"LOTE-{n:03d}"):
-        n += 1
-    pid = f"LOTE-{n:03d}"
-    crear_producto(ProductoIn(id=pid, nombre="Leche entera 1L", origen="Tambo La Esperanza (Rafaela, Santa Fe)"))
-    for cp in ESCENARIO_DEMO:
-        registrar_checkpoint(CheckpointIn(producto_id=pid, **cp))
-    return {"producto_id": pid, "historial": chain.product_history(pid)}
+    ids = []
+    for lote in ESCENARIO_DEMO:
+        pid = siguiente_id_lote()
+        crear_producto(ProductoIn(id=pid, nombre=lote["nombre"], origen=lote["origen"]))
+        for cp in lote["checkpoints"]:
+            registrar_checkpoint(CheckpointIn(producto_id=pid, **cp))
+        ids.append(pid)
+    principal = ids[0]  # el lote de leche, protagonista de la demo
+    return {"producto_id": principal, "productos": ids, "historial": chain.product_history(principal)}
 
 
 @app.post("/api/demo/reset", tags=["Demo"])

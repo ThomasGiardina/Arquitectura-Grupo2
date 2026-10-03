@@ -161,7 +161,7 @@ function cubos(n = 4) {
 function bannerIntegridad(textoOk) {
   const v = S.validacion;
   return `
-    <section class="banner ${v.valido ? "" : "error"}">
+    <section class="banner ${v.valido ? "" : "error"}" data-tour="banner">
       ${ic(v.valido ? "escudo-ok" : "escudo-mal", "escudo")}
       <div class="banner-texto">
         <h2>${v.valido ? "Cadena íntegra" : "Cadena comprometida"}</h2>
@@ -265,20 +265,20 @@ function vResumen() {
   const p = prods.find(x => x.id === S.producto);
   return `
     ${bannerIntegridad("Todos los bloques están validados y sin alteraciones.")}
-    <div class="grid g-3">
+    <div class="grid g-3" data-tour="stats">
       ${stat({ icono: "box", tono: "tono-teal redondo", etiqueta: "Productos", valor: prods.length })}
       ${stat({ icono: "pin", tono: "tono-azul redondo", etiqueta: "Checkpoints", valor: cps.length })}
       ${stat({ icono: "alerta", tono: "tono-naranja redondo", etiqueta: "Alertas", valor: c.alto, extra: "checkpoints con riesgo alto" })}
     </div>
     <div class="grid g-main-side" style="align-items:start">
-      <div class="card">
+      <div class="card" data-tour="actividad">
         <div class="card-titulo">${ic("reloj")}<div><h3>Actividad reciente</h3></div>
           ${prods.length > 1 ? `<div class="der"><select class="sin-icono" onchange="S.producto=this.value;render()">${opcionesProductos(S.producto)}</select></div>` : ""}
         </div>
         ${p ? `<div class="lista-actividad">${p.bloques.map(b => itemActividad(b, p)).join("")}</div>` : vacioDemo()}
       </div>
       <div class="col">
-        <div class="card">
+        <div class="card" data-tour="accesos">
           <div class="card-titulo">${ic("rayo")}<div><h3>Accesos rápidos</h3></div></div>
           <div class="accesos-lista">
             <button class="acceso primario" onclick="cargarEscenario()">${ic("play")}Cargar demo${ic("chev", "chev-der")}</button>
@@ -299,7 +299,7 @@ function vResumen() {
 function loteMini(p, titulo) {
   const etapa = p.etapa ? ETAPA[p.etapa] : null;
   return `
-    <div class="card lote-mini">
+    <div class="card lote-mini" data-tour="lote">
       <div class="card-titulo">${ic("box")}<div><h3>${titulo}</h3></div></div>
       <div class="fila-top"><h4>${esc(p.nombre)}</h4><span class="pill">${esc(p.id)}</span></div>
       <div class="duo2">
@@ -315,21 +315,21 @@ function vProductos() {
   const p = prods.find(x => x.id === S.producto);
   const sinOrigenes = origenes.length === 0;
   return `
-    <div class="grid g-3">
+    <div class="grid g-3" data-tour="stats">
       ${stat({ icono: "box", tono: "tono-teal redondo", etiqueta: "Productos", valor: prods.length })}
       ${stat({ icono: "alerta", tono: "tono-naranja redondo", etiqueta: "Con riesgo", valor: prods.filter(x => x.riesgo === "alto").length, extra: "lotes con riesgo alto" })}
       ${stat({ icono: "pin", tono: "tono-azul redondo", etiqueta: "Orígenes", valor: origenes.length })}
     </div>
     <div class="grid g-main-side" style="align-items:start">
-      <div class="card">
+      <div class="card" data-tour="listado">
         <div class="card-titulo">${ic("lista")}<div><h3>Listado de productos</h3></div></div>
-        <div class="campo buscador">${ic("lupa")}<input placeholder="Buscar productos…" value="${esc(S.tabla.q)}" oninput="buscarProducto(this.value)"></div>
+        <div class="campo buscador">${ic("lupa")}<input placeholder="Buscar productos…" autocomplete="off" value="${esc(S.tabla.q)}" oninput="buscarProducto(this.value)"></div>
         <div id="tablaProductos">${tablaProductos()}</div>
       </div>
       <div class="col">
-        <div class="card">
+        <div class="card" data-tour="alta">
           <div class="card-titulo">${ic("mas")}<div><h3>Alta de producto</h3></div></div>
-          <form class="form-horizontal" onsubmit="return altaProducto(event)">
+          <form class="form-horizontal" autocomplete="off" onsubmit="return altaProducto(event)">
             <label for="altaId">ID del lote</label>
             <input class="sin-icono" id="altaId" name="id" placeholder="Ej. LOTE-025" required>
             <label for="altaNombre">Nombre</label>
@@ -405,16 +405,16 @@ function vCheckpoints() {
     <div class="campo">${ic(icono)}<input id="cp-${name}" name="${name}" type="number" placeholder="${unidad}" value="${f[name]}" ${attrs} required oninput="prediccionEnVivo()"></div>`;
 
   return `
-    <div class="grid g-3">
+    <div class="grid g-3" data-tour="stats">
       ${stat({ icono: "box", tono: "tono-teal redondo", etiqueta: "Hoy", valor: deHoy, extra: `${plural(cps.length, "checkpoint")} en total` })}
       ${stat({ icono: "alerta", tono: "tono-naranja redondo", etiqueta: "Riesgo alto", valor: conteoRiesgo(cps).alto })}
       ${stat({ icono: "termo", tono: "tono-azul redondo", etiqueta: "Temp. promedio", valor: prom === null ? "—" : `${prom.toFixed(1)} °C` })}
     </div>
     <div class="grid g-checkpoints">
-      <div class="card">
+      <div class="card" data-tour="form-cp">
         <div class="card-titulo">${ic("mas")}<div><h3>Nuevo checkpoint</h3></div></div>
         ${prods.length ? `
-        <form id="formCheckpoint" class="form-horizontal" onsubmit="return registrarCheckpoint(event)">
+        <form id="formCheckpoint" class="form-horizontal" autocomplete="off" onsubmit="return registrarCheckpoint(event)">
           <label for="cp-producto">Producto</label>
           <select class="sin-icono" id="cp-producto" name="producto_id" required>
             <option value="" disabled selected>Seleccionar producto</option>
@@ -432,11 +432,11 @@ function vCheckpoints() {
           <button type="submit" class="btn-submit">${ic("play")}Registrar checkpoint</button>
         </form>` : vacioDemo("Primero registrá un producto.")}
       </div>
-      <div class="card">
+      <div class="card" data-tour="prediccion">
         <div class="card-titulo">${ic("rayo")}<div><h3>Predicción</h3></div></div>
         <div id="panelPred">${panelPred()}</div>
       </div>
-      <div class="card">
+      <div class="card" data-tour="ultimos">
         <div class="card-titulo">${ic("reloj")}<div><h3>Últimos checkpoints</h3></div></div>
         ${cps.length
           ? `<div class="lista-cps">${cps.slice(-4).reverse().map(itemCheckpoint).join("")}</div>`
@@ -515,7 +515,7 @@ function vBlockchain() {
   return `
     ${bannerIntegridad("Todos los bloques están correctamente enlazados.")}
     <div class="grid g-main-side" style="align-items:start">
-      <div class="card">
+      <div class="card" data-tour="explorador">
         <div class="card-titulo">${ic("box")}<div><h3>Explorador de bloques</h3></div>
           ${prods.length > 1 ? `<div class="der"><select class="sin-icono" onchange="S.filtroBC=this.value||null;S.bloque=null;render()">
             <option value="">Toda la cadena</option>${opcionesProductos(S.filtroBC)}
@@ -525,7 +525,7 @@ function vBlockchain() {
       </div>
       <div class="col">
         ${sel ? detalleBloque(sel) : ""}
-        <div class="card">
+        <div class="card" data-tour="acciones">
           <div class="card-titulo">${ic("rayo")}<div><h3>Acciones</h3></div></div>
           <div class="accesos-lista">
             <button class="acceso primario" onclick="validarManual()">${ic("play")}Validar cadena${ic("chev", "chev-der")}</button>
@@ -559,7 +559,7 @@ function detalleBloque(b) {
     : `<span class="tenue">Sin predicción</span>`;
   const fila = (icono, clave, valor) => `<div class="det">${ic(icono)}<span class="k">${clave}</span><span class="v">${valor}</span></div>`;
   return `
-    <div class="card">
+    <div class="card" data-tour="detalle-bloque">
       <div class="card-titulo">${ic("doc")}<div><h3>Detalle del bloque</h3></div><span class="der tenue">Bloque #${b.index}</span></div>
       <div class="detalle-lista">
         ${fila("box", "Producto", prod ? esc(prod.id) : "—")}
@@ -583,14 +583,14 @@ function vModelo() {
   if (!m) return `<div class="vacio">Cargando modelo…</div>`;
   const C = 2 * Math.PI * 88;
   return `
-    <div class="grid g-4">
+    <div class="grid g-4" data-tour="stats">
       ${stat({ icono: "diana", tono: "tono-teal", etiqueta: "Exactitud en test", valor: pct(m.accuracy) })}
       ${stat({ icono: "arbol", tono: "tono-teal", etiqueta: "Árboles del bosque", valor: m.n_estimators })}
       ${stat({ icono: "capas", tono: "tono-teal", etiqueta: "Profundidad máxima", valor: m.max_depth })}
       ${stat({ icono: "db", tono: "tono-teal", etiqueta: "Muestras del dataset", valor: m.muestras.toLocaleString("es-AR"), extra: "80 % entrenamiento · 20 % test" })}
     </div>
     <div class="grid g-2">
-      <div class="card">
+      <div class="card" data-tour="desempeno">
         <div class="card-titulo">${ic("barras")}<div><h3>Desempeño del modelo</h3></div>
           <button class="btn-verde btn-chico der" id="btnEntrenar" onclick="reentrenar()">${ic("refresh")}Reentrenar modelo</button></div>
         <div class="donut-wrap">
@@ -609,13 +609,13 @@ function vModelo() {
           </div>
         </div>
       </div>
-      <div class="card">
+      <div class="card" data-tour="importancia">
         <div class="card-titulo">${ic("barras")}<div><h3>Importancia de variables</h3><p>Cuánto pesa cada variable en las decisiones del bosque</p></div></div>
         ${barrasImportancia()}
       </div>
     </div>
     <div class="grid g-2">
-      <div class="card">
+      <div class="card" data-tour="interpreta">
         <div class="card-titulo">${ic("foco")}<div><h3>Cómo interpreta el riesgo</h3><p>El modelo aprende patrones a partir de las variables de la cadena de frío</p></div></div>
         <div class="lista-cajas">
           <div class="caja">${ic("termo")}<span style="color:inherit;font-size:inherit">Temperatura entre <em>2–8 °C</em> se considera segura.</span></div>
@@ -624,7 +624,7 @@ function vModelo() {
           <div class="caja">${ic("pin")}<span style="color:inherit;font-size:inherit"><em>Distancias más largas</em> incrementan la probabilidad de ruptura.</span></div>
         </div>
       </div>
-      <div class="card">
+      <div class="card" data-tour="limitaciones">
         <div class="card-titulo">${ic("alerta", "", 'style="color:var(--alto)"')}<div><h3>Limitaciones</h3><p>Aspectos a considerar al interpretar los resultados</p></div></div>
         <div class="lista-cajas">
           <div class="caja">${ic("db")}<div><b>Entrenado con dataset sintético</b><span>Los resultados reflejan patrones de datos simulados.</span></div></div>
@@ -656,7 +656,7 @@ function vDemo() {
   const ok = txt => `<span class="estado-ok">${ic("check")}${txt}</span>`;
 
   return `
-    <section class="banner">
+    <section class="banner" data-tour="banner-demo">
       <div class="play-grande">${ic("play")}</div>
       <div class="banner-texto">
         <h2>Escenario de demo</h2>
@@ -669,11 +669,11 @@ function vDemo() {
       </div>
     </section>
     <div class="grid g-main-side demo-grid">
-      <div class="card">
+      <div class="card" data-tour="pasos">
         <div class="card-titulo">${ic("lista")}<div><h3>Pasos de la demo</h3><p>Recorrido recomendado para la presentación</p></div></div>
         <div class="pasos">
           ${paso(1, "var(--acento)", "var(--azul)", "box", "tono-teal", "Cargar lote de ejemplo",
-                 "Carga un lote de leche con su recorrido completo: productor, transportista, almacén y minorista.",
+                 "Carga 5 lotes en distintas etapas. El protagonista es un lote de leche con su recorrido completo: productor, transportista, almacén y minorista.",
                  p ? ok(`Cargado (${esc(p.id)})`) : `<button class="btn-verde btn-chico" onclick="cargarEscenario()">Cargar lote ${ic("flecha")}</button>`, !!p)}
           ${paso(2, "var(--azul)", "var(--medio)", "doc", "tono-azul", "Revisar checkpoints",
                  "Recorré los eventos registrados en cada etapa y la predicción del modelo en cada uno.",
@@ -691,7 +691,7 @@ function vDemo() {
       </div>
       <div class="col">
         ${p ? `
-        <div class="card lote-ejemplo">
+        <div class="card lote-ejemplo" data-tour="lote-ejemplo">
           <div class="card-titulo">${ic("box")}<div><h3>Lote del ejemplo</h3></div></div>
           <div class="lote-cab">
             <div><h4>${esc(p.nombre)}</h4><span class="lote-id">${esc(p.id)}</span></div>
@@ -713,7 +713,7 @@ function vDemo() {
         ${resultadoDemo(nAtaque)}
       </div>
     </div>
-    <div class="card accesos">
+    <div class="card accesos" data-tour="accesos-demo">
       <div class="titulo-accesos">${ic("rayo")}<div><h3 class="acento" style="font-size:18px">Accesos rápidos</h3><span class="tenue">Navegá directamente a las secciones durante la demo</span></div></div>
       <button class="accion" onclick="ir('blockchain')">${ic("box")}<div><b>Ir a Blockchain</b><span>Ver bloques y hashes</span></div>${ic("flecha")}</button>
       <button class="accion" onclick="ir('checkpoints')">${ic("pin")}<div><b>Ir a Checkpoints</b><span>Predicción en vivo</span></div>${ic("flecha")}</button>
@@ -778,9 +778,11 @@ function render() {
   document.getElementById("subVista").textContent = vista.sub;
   document.querySelectorAll(".nav a").forEach(a => a.classList.toggle("activo", a.dataset.vista === nombre));
   document.querySelector(".nav a.activo").scrollIntoView({ block: "nearest", inline: "nearest" });  // en celular la nav es horizontal
+  moverIndicador();
   const mini = document.getElementById("estadoMini");
   mini.className = "estado-mini" + (S.validacion.valido ? "" : " mal");
   mini.lastElementChild.textContent = S.validacion.valido ? "Cadena íntegra" : "Cadena alterada";
+  mini.title = mini.lastElementChild.textContent;  // se ve al pasar el mouse con la sidebar contraída
   document.getElementById("vista").innerHTML = vista.render();
   vista.despues?.();
 }
@@ -801,11 +803,12 @@ async function cargarDatos() {
   if (!S.modelo) S.modelo = await api("/api/modelo/info");
 
   const prods = productos();
-  if (!prods.some(p => p.id === S.producto)) S.producto = prods.at(-1)?.id ?? null;
   if (!prods.some(p => p.id === S.demoPid)) {
     // Reconoce el último lote cargado por el escenario de demo
     S.demoPid = [...prods].reverse().find(p => p.nombre === "Leche entera 1L" && /^LOTE-\d{3}$/.test(p.id))?.id ?? null;
   }
+  // Por defecto se muestra el lote de la demo (o el último registrado)
+  if (!prods.some(p => p.id === S.producto)) S.producto = S.demoPid ?? prods.at(-1)?.id ?? null;
 }
 
 async function refrescar() {
@@ -826,7 +829,7 @@ async function cargarEscenario() {
     const r = await api("/api/demo/escenario", { method: "POST" });
     S.demoPid = r.producto_id;
     S.producto = r.producto_id;
-    toast(`Escenario cargado: ${r.producto_id}`, "info");
+    toast(`Escenario cargado: ${plural(r.productos.length, "lote")} (${r.producto_id} es el de la demo)`, "info");
     await refrescar();
   } catch (e) { toast(e.message); }
 }
@@ -891,6 +894,49 @@ async function registrarCheckpoint(ev) {
   } catch (e) { toast(e.message); }
   return false;
 }
+
+// ---------- Resaltado deslizante de la sección activa ----------
+
+const navHorizontal = window.matchMedia("(max-width: 960px)");  // en celular la nav es una barra horizontal
+
+/** Lleva el resaltado hasta la sección activa (con animación, salvo en la primera ubicación) */
+function moverIndicador(animar = true) {
+  const ind = document.getElementById("navIndicador");
+  const activo = document.querySelector(".nav a.activo");
+  if (!ind || !activo) return;
+  const primeraVez = !ind.style.height;
+  ind.classList.toggle("sin-anim", !animar || primeraVez);
+  ind.style.transform = `translate(${activo.offsetLeft}px, ${activo.offsetTop}px)`;
+  ind.style.height = `${activo.offsetHeight}px`;
+  // En la sidebar vertical el ancho lo da el CSS (sigue a la sidebar al contraerla)
+  ind.style.width = navHorizontal.matches ? `${activo.offsetWidth}px` : "";
+  if (!animar || primeraVez) {
+    void ind.offsetWidth;  // fuerza a aplicar la posición sin transición antes de reactivarla
+    ind.classList.remove("sin-anim");
+  }
+}
+
+window.addEventListener("resize", () => moverIndicador(false));
+
+// ---------- Sidebar contraíble (la preferencia se recuerda en el navegador) ----------
+
+function aplicarSidebar(contraida) {
+  document.body.classList.toggle("sidebar-contraida", contraida);
+  const btn = document.getElementById("toggleSidebar");
+  const texto = contraida ? "Expandir menú" : "Contraer menú";
+  btn.title = texto;
+  btn.setAttribute("aria-label", texto);
+  btn.setAttribute("aria-expanded", String(!contraida));
+  btn.querySelector(".txt").textContent = texto;
+}
+
+function alternarSidebar() {
+  const contraida = !document.body.classList.contains("sidebar-contraida");
+  aplicarSidebar(contraida);
+  try { localStorage.setItem("sidebarContraida", contraida ? "1" : "0"); } catch { /* sin almacenamiento: no pasa nada */ }
+}
+
+try { aplicarSidebar(localStorage.getItem("sidebarContraida") === "1"); } catch { aplicarSidebar(false); }
 
 // Arranque
 refrescar().catch(e => toast(e.message));

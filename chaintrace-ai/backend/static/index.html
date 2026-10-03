@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ChainTrace-AI</title>
+<link rel="stylesheet" href="vendor/driver/driver.css">
 <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
@@ -44,6 +45,7 @@
     <symbol id="i-tendencia" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-6"/></symbol>
     <symbol id="i-escudo-linea" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
     <symbol id="i-fabrica" viewBox="0 0 24 24"><path d="M2 20V9l5 3V9l5 3V9l5 3V4h4v16Z"/><path d="M6 16h1M11 16h1M16 16h1"/></symbol>
+    <symbol id="i-chevrons" viewBox="0 0 24 24"><path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
     <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
     <symbol id="i-flecha" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
@@ -72,18 +74,20 @@
 <aside class="sidebar">
   <a class="logo" href="#resumen"><svg class="i"><use href="#i-logo"/></svg><div>ChainTrace-<span>AI</span></div></a>
   <nav class="nav">
-    <a href="#resumen" data-vista="resumen"><svg class="i"><use href="#i-casa"/></svg>Resumen</a>
-    <a href="#productos" data-vista="productos"><svg class="i"><use href="#i-box"/></svg>Productos</a>
-    <a href="#checkpoints" data-vista="checkpoints"><svg class="i"><use href="#i-pin"/></svg>Checkpoints</a>
-    <a href="#blockchain" data-vista="blockchain"><svg class="i"><use href="#i-red"/></svg>Blockchain</a>
-    <a href="#modelo" data-vista="modelo"><svg class="i"><use href="#i-barras-nav"/></svg>Modelo ML</a>
-    <a href="#demo" data-vista="demo"><svg class="i"><use href="#i-play-linea"/></svg>Demo</a>
+    <span class="nav-indicador" id="navIndicador" aria-hidden="true"></span>
+    <a href="#resumen" data-vista="resumen" title="Resumen"><svg class="i"><use href="#i-casa"/></svg><span class="txt">Resumen</span></a>
+    <a href="#productos" data-vista="productos" title="Productos"><svg class="i"><use href="#i-box"/></svg><span class="txt">Productos</span></a>
+    <a href="#checkpoints" data-vista="checkpoints" title="Checkpoints"><svg class="i"><use href="#i-pin"/></svg><span class="txt">Checkpoints</span></a>
+    <a href="#blockchain" data-vista="blockchain" title="Blockchain"><svg class="i"><use href="#i-red"/></svg><span class="txt">Blockchain</span></a>
+    <a href="#modelo" data-vista="modelo" title="Modelo ML"><svg class="i"><use href="#i-barras-nav"/></svg><span class="txt">Modelo ML</span></a>
+    <a href="#demo" data-vista="demo" title="Demo"><svg class="i"><use href="#i-play-linea"/></svg><span class="txt">Demo</span></a>
   </nav>
   <div class="sidebar-pie">
     <div class="estado-mini" id="estadoMini"><span class="dot"></span><span>Validando…</span></div>
-    <p>Trazabilidad de productos perecederos</p>
-    <p>Blockchain permisionada<br>+ Machine Learning</p>
   </div>
+  <button class="toggle-sidebar" id="toggleSidebar" onclick="alternarSidebar()" title="Contraer menú" aria-label="Contraer menú" aria-expanded="true">
+    <svg class="i"><use href="#i-chevrons"/></svg><span class="txt">Contraer menú</span>
+  </button>
 </aside>
 
 <div class="app">
@@ -99,6 +103,11 @@
 
 <div id="toast"></div>
 
+<!-- Botón de ayuda: explica la sección actual con un recorrido guiado (tour.js) -->
+<button class="btn-ayuda" onclick="iniciarTour()" title="¿Cómo funciona esta sección?" aria-label="¿Cómo funciona esta sección?">?</button>
+
+<script src="vendor/driver/driver.js.iife.js"></script>
 <script src="app.js?v=2"></script>
+<script src="tour.js"></script>
 </body>
 </html>
